@@ -62,13 +62,13 @@ def startup():
 
 def main(
     catalog_path,
-    rerun           = "s16a_wide",
+    rerun           = "s18a_wide",
     template        = ":embedded:",
     show_template   = False,
     columns         = ["g_cmodel_mag","g_cmodel_mag"],
     ra              = "ra",
     dec             = "dec",
-    accuracy        = 0.5
+    accuracy        = 0.1
 ):
     """
     Read a catalog and print out an SQL query string that cross-matches
