@@ -91,7 +91,8 @@ def main(
         raise StandardError("No data in user's catalog.")
 
     cols = user_catalog.dtype.names
-    #cols=["ra","dec"]
+    print(cols)
+    #cols=('ra', 'dec')
     quoted_cols = [quote_identifier("user."+col) for col in cols]
     cols_to_quoted = dict(itertools.izip(cols, quoted_cols))
 
@@ -252,12 +253,47 @@ WITH
                 ON coneSearch(coord, {ra}, {dec}, {accuracy})
     )
 SELECT
-    {columns}
+    	f.ra,
+	f.dec,
+	f.g_cmodel_mag,
+	f.g_cmodel_magsigma,
+	f.r_cmodel_mag,
+	f.r_cmodel_magsigma,
+	f.i_cmodel_mag,
+	f.i_cmodel_magsigma,
+    f2.g_psfflux_mag,
+    f2.g_psfflux_magsigma,
+    f2.r_psfflux_mag,
+    f2.r_psfflux_magsigma,
+    f2.i_psfflux_mag,
+    f2.i_psfflux_magsigma,
+    f.object_id
 FROM
     match LEFT JOIN {rerun}.forced as f USING(object_id)
 JOIN {rerun}.forced2 AS f2 ON f.object_id = f2.object_id
 WHERE
     f.isprimary
+    AND NOT f2.g_psfflux_flag
+    AND NOT f2.r_psfflux_flag
+    AND NOT f2.i_psfflux_flag
+    AND NOT f.g_cmodel_flag 
+    AND NOT f.r_cmodel_flag
+    AND NOT f.i_cmodel_flag
+    AND NOT f.g_pixelflags_edge
+    AND NOT f.r_pixelflags_edge
+    AND NOT f.i_pixelflags_edge        
+    AND NOT f.g_pixelflags_bad 
+    AND NOT f.r_pixelflags_bad
+    AND NOT f.i_pixelflags_bad
+    AND NOT f.g_pixelflags_interpolatedcenter
+    AND NOT f.r_pixelflags_interpolatedcenter
+    AND NOT f.i_pixelflags_interpolatedcenter
+    AND NOT f.g_pixelflags_saturatedcenter 
+    AND NOT f.r_pixelflags_saturatedcenter
+    AND NOT f.i_pixelflags_saturatedcenter
+    AND NOT f.g_pixelflags_crcenter
+    AND NOT f.r_pixelflags_crcenter
+    AND NOT f.i_pixelflags_crcenter         
 """
 
 if __name__ == "__main__":
